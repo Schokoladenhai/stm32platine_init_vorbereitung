@@ -106,6 +106,9 @@ net use W: \\wsl.localhost\Ubuntu /persistent:yes
 ```
 
 Dann `W:\home\<user>\<repo>\cubemx\HardwareInterface.ioc` öffnen, ändern und „Generate Code“.
-Eigener Code gehört nie nach `cubemx/`. Einzige Ausnahme sind zwei Zeilen im User-Code von
-`USB_DEVICE/App/usbd_cdc_if.c`, die empfangene USB-Daten an `common/usb_cdc` weitergeben. Die Start-Task heißt `app` mit `app_main` als „As weak“.
+Eigener Code gehört nie nach `cubemx/`. Einzige Ausnahmen, beide im User-Code und damit sicher beim Generieren:
+- `USB_DEVICE/App/usbd_cdc_if.c`: zwei Zeilen, die empfangene USB-Daten an `common/usb_cdc` weitergeben.
+- `USB_DEVICE/App/usbd_desc.c`: setzt die USB-Seriennummer aus der Chip-ID, weil CubeMX das in `Get_SerialNum()` vergisst.
+
+Die Start-Task heißt `app` mit `app_main` als „As weak“.
 Die echte Funktion steht in `app/app.cpp`.

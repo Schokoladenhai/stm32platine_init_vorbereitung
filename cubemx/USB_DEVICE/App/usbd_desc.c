@@ -322,7 +322,11 @@ uint8_t * USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
    * ID */
   Get_SerialNum();
   /* USER CODE BEGIN USBD_FS_SerialStrDescriptor */
-
+  /* Get_SerialNum() von CubeMX liest die Chip-ID nicht (Generatorfehler, die
+   * Variablen bleiben uninitialisiert). Ohne das wäre die Seriennummer bei jedem
+   * Start Zufall, und Windows erkennt die Platine nach einem Reset nicht wieder. */
+  IntToUnicode(*(uint32_t *)DEVICE_ID1 + *(uint32_t *)DEVICE_ID3, &USBD_StringSerial[2], 8);
+  IntToUnicode(*(uint32_t *)DEVICE_ID2, &USBD_StringSerial[18], 4);
   /* USER CODE END USBD_FS_SerialStrDescriptor */
   return (uint8_t *) USBD_StringSerial;
 }
