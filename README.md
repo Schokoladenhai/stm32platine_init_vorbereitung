@@ -13,19 +13,21 @@ Aufbau und Begründungen stehen im Architekturkonzept der Studienarbeit.
 | `app/` | `app_main()` als Einstieg, Konfiguration, später die Tasks |
 | `test/` | Nur im Test-Build: Kommando-Shell und Testdatei pro Treiber |
 | `cmake/` | Toolchain-Datei für `arm-none-eabi-gcc` |
-| `tools/` | `build.sh`, `flash.sh`, `usb-wsl.ps1` |
+| `tools/` | `dev.sh`, `build.sh`, `flash.sh`, `usb-wsl.ps1` |
 | `.devcontainer/` | Entwicklungsumgebung |
 
 Später kommen `drivers/`, `bus/` und `table/` dazu.
 
 ## Entwicklungsumgebung
 
-Voraussetzung ist Docker, unter Windows in WSL 2. Das Repo wird in WSL geklont.
-Der Dev-Container ist an keine IDE gebunden.
+Voraussetzung ist Docker, unter Windows in WSL 2. Das Repo wird **in WSL** geklont
+(z. B. `~/stm32platine`) und auch aus WSL heraus geöffnet, nicht über ein Windows-Laufwerk.
+Docker kann einen Ordner, der über `W:\` oder `\\wsl.localhost\…` geöffnet wurde, nicht einbinden.
 
-- **Zed, VS Code:** Ordner öffnen und „In Container öffnen“ wählen.
-- **Ohne IDE:** `devcontainer up --workspace-folder .` und `devcontainer exec --workspace-folder . bash`
-  (Dev-Container-CLI, `npm install -g @devcontainers/cli`).
+- **Ohne IDE (immer möglich):** in WSL `tools/dev.sh` ausführen. Das baut das Image und öffnet
+  eine Shell im Container. Jeder Editor kann die Dateien dabei normal bearbeiten.
+- **Mit IDE:** Ordner über die WSL-Anbindung der IDE öffnen und „In Container öffnen“ wählen
+  (`.devcontainer/devcontainer.json`, ohne IDE-spezifische Einstellungen).
 
 ## Bauen
 
