@@ -5,7 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
         gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib \
         cmake ninja-build git \
-        openocd dfu-util gdb-multiarch usbutils tio \
+        openocd dfu-util gdb-multiarch usbutils \
         clang-format sudo ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 

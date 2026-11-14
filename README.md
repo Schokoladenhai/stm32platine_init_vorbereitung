@@ -79,7 +79,7 @@ Der Test-Build startet eine Kommando-Shell über USB-CDC am Stecker „USB Host�
 
 ```bash
 build.sh --test && flash.sh --test
-term.sh               # findet den Port selbst, Ende mit Ctrl+A, dann Q
+term.sh               # findet den Port selbst, Ende mit exit oder Ctrl+C
 ```
 
 Unter Windows muss dafür auch das Gerät `0483:5740` (laufende Firmware) mit `usb-wsl.cmd` durchgereicht sein.

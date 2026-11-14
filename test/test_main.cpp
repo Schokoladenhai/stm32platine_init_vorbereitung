@@ -23,6 +23,9 @@ void cmd_help(int, char**) {
 
 void cmd_version(int, char**) { shell::ok("%s %s test", FW_VERSION, FW_BUILD_TYPE); }
 
+// Beendet nur die Sitzung in term.sh, auf der Platine passiert nichts.
+void cmd_exit(int, char**) { shell::ok(); }
+
 char task_state(eTaskState s) {
     switch (s) {
         case eRunning: return 'R';
@@ -56,6 +59,7 @@ const shell::Command general_commands[] = {
     {"help", "alle Befehle anzeigen", cmd_help},
     {"version", "Firmware-Version und Build-Art", cmd_version},
     {"tasks", "FreeRTOS-Tasks mit Zustand, Prioritaet, freiem Stack", cmd_tasks},
+    {"exit", "Terminal (term.sh) beenden", cmd_exit},
 };
 
 // ---- Registrierung: eine Zeile pro Treiber-Testdatei ---------------------

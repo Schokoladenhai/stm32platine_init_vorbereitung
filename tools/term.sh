@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 # Öffnet ein Terminal zur Platine (USB-CDC, z. B. für die Test-Shell).
 # Findet die seriellen Ports der Platine selbst, bei mehreren fragt es nach.
-#   term.sh               Port suchen und tio öffnen
+#   term.sh               Port suchen und verbinden
 #   term.sh /dev/ttyACM1  bestimmten Port öffnen
-# Beenden mit Ctrl+A, dann Q (andere Taste: TERM_KEY=x term.sh).
-# Ctrl+T, die Vorgabe von tio, fangen manche Terminals selbst ab.
+# Beenden mit „exit“ oder Ctrl+C.
 set -euo pipefail
 
 port="${1:-}"
@@ -35,13 +34,35 @@ if [[ -z "$port" ]]; then
     fi
 fi
 
-SUDO=()
-[[ -w "$port" ]] || SUDO=(sudo --preserve-env=XDG_CONFIG_HOME)
-# tio 2.7 kennt die Taste nur aus einer Konfigdatei, deshalb eine temporäre.
-key="${TERM_KEY:-a}"
-cfg="$(mktemp -d)"
-mkdir -p "$cfg/tio"
-echo "prefix-ctrl-key = $key" > "$cfg/tio/config"
-echo "Verbinde mit $port (Enter drücken für die Eingabeaufforderung, Ende mit Ctrl+${key^^}, dann Q)"
-XDG_CONFIG_HOME="$cfg" "${SUDO[@]}" tio "$port" || true
-rm -rf "$cfg"
+# Ohne Rechte auf den Port das ganze Skript mit sudo neu starten
+if [[ ! -r "$port" || ! -w "$port" ]]; then
+    exec sudo "$(readlink -f "$0")" "$port"
+fi
+
+echo "Verbunden mit $port. Enter für die Eingabeaufforderung, Ende mit exit oder Ctrl+C."
+
+stty -F "$port" raw -echo
+exec 3<>"$port"
+cat <&3 &                           # Ausgabe der Platine (inklusive Echo der Eingabe)
+reader=$!
+
+saved="$(stty -g)"
+cleanup() { stty "$saved"; kill "$reader" 2>/dev/null || true; echo; }
+trap cleanup EXIT
+stty raw -echo                      # jede Taste sofort weitergeben, die Platine schickt das Echo
+
+line=""
+while IFS= read -rn1 c; do
+    case "$c" in
+        $'\x03') break ;;                               # Ctrl+C
+        $'\r' | "")                                     # Enter
+            printf '\r' >&3
+            if [[ "$line" == exit ]]; then
+                sleep 0.2                               # „OK“ der Platine noch anzeigen
+                break
+            fi
+            line="" ;;
+        $'\x7f' | $'\b') line="${line%?}"; printf '%s' "$c" >&3 ;;
+        *) line+="$c"; printf '%s' "$c" >&3 ;;
+    esac
+done
