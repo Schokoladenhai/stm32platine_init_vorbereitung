@@ -1,0 +1,55 @@
+#include "app/app.h"
+
+#include "FreeRTOS.h"
+#include "app/app_config.h"
+#include "main.h"
+#include "task.h"
+#include "usb_device.h"
+
+#if FW_TEST_BUILD
+#include "test/test_main.h"
+#endif
+
+namespace {
+
+// Lebenszeichen: Normal-Build blinkt grün, Test-Build blinkt blau.
+// So sieht man ohne Debugger, dass die Firmware läuft und welche drauf ist.
+#if FW_TEST_BUILD
+GPIO_TypeDef* const heartbeat_port = DEBUG_LED_BLUE_GPIO_Port;
+constexpr uint16_t heartbeat_pin = DEBUG_LED_BLUE_Pin;
+#else
+GPIO_TypeDef* const heartbeat_port = DEBUG_LED_GREEN_GPIO_Port;
+constexpr uint16_t heartbeat_pin = DEBUG_LED_GREEN_Pin;
+#endif
+
+StaticTask_t heartbeat_tcb;
+StackType_t heartbeat_stack[app_config::heartbeat_stack_words];
+
+void heartbeat_task(void*) {
+    for (;;) {
+        HAL_GPIO_TogglePin(heartbeat_port, heartbeat_pin);
+        vTaskDelay(pdMS_TO_TICKS(app_config::heartbeat_period_ms));
+    }
+}
+
+void app_init() {
+#if FW_TEST_BUILD
+    test::start();  // später: Kommando-Shell über USB-CDC
+#else
+    // später: Tabelle, Busse, Treiber und Tasks (siehe Architekturkonzept)
+#endif
+    xTaskCreateStatic(heartbeat_task, "heartbeat", app_config::heartbeat_stack_words, nullptr,
+                      app_config::heartbeat_priority, heartbeat_stack, &heartbeat_tcb);
+}
+
+}  // namespace
+
+extern "C" void app_main(void* /*argument*/) {
+    // Das hat der CubeMX-Platzhalter in main.c gemacht und muss deshalb hier passieren.
+    MX_USB_DEVICE_Init();
+
+    app_init();
+
+    // Die Start-Task wird nicht mehr gebraucht, FreeRTOS gibt ihren Stack frei.
+    vTaskDelete(nullptr);
+}
