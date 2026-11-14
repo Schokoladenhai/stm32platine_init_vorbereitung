@@ -70,11 +70,11 @@ DMA_HandleTypeDef hdma_usart3_tx;
 DMA_HandleTypeDef hdma_usart6_rx;
 DMA_HandleTypeDef hdma_usart6_tx;
 
-/* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
-  .stack_size = 1280 * 4,
+/* Definitions for app */
+osThreadId_t appHandle;
+const osThreadAttr_t app_attributes = {
+  .name = "app",
+  .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
@@ -99,7 +99,7 @@ static void MX_TIM3_Init(void);
 static void MX_USART6_UART_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM8_Init(void);
-void StartDefaultTask(void *argument);
+void app_main(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -184,8 +184,8 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  /* creation of app */
+  appHandle = osThreadNew(app_main, NULL, &app_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
 
@@ -558,7 +558,7 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 0;
+  htim3.Init.Prescaler = 83;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -731,7 +731,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 420000;
+  huart2.Init.BaudRate = 115200;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -1027,14 +1027,14 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_app_main */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the app thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
+/* USER CODE END Header_app_main */
+__weak void app_main(void *argument)
 {
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
