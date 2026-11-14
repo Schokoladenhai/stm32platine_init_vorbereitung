@@ -2,6 +2,7 @@
 
 #include "FreeRTOS.h"
 #include "app/app_config.h"
+#include "common/usb_cdc.h"
 #include "main.h"
 #include "task.h"
 #include "usb_device.h"
@@ -50,6 +51,8 @@ void app_init() {
 }  // namespace
 
 extern "C" void app_main(void* /*argument*/) {
+    // Puffer für USB-Empfang anlegen, bevor der USB-Stack Daten liefern kann.
+    usb_cdc::init();
     // Das hat der CubeMX-Platzhalter in main.c gemacht und muss deshalb hier passieren.
     MX_USB_DEVICE_Init();
 

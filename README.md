@@ -11,9 +11,10 @@ Aufbau und Begründungen stehen im Architekturkonzept der Studienarbeit.
 |---|---|
 | `cubemx/` | Von STM32CubeMX generiert. Nur über die `.ioc` in CubeMX ändern. |
 | `app/` | `app_main()` als Einstieg, Konfiguration, später die Tasks |
+| `common/` | Gemeinsame Bausteine, z. B. `usb_cdc` (serielle Schnittstelle über USB) |
 | `test/` | Nur im Test-Build: Kommando-Shell und Testdatei pro Treiber |
 | `cmake/` | Toolchain-Datei für `arm-none-eabi-gcc` |
-| `tools/` | `dev.sh`, `build.sh`, `flash.sh`, `usb-wsl.cmd`/`.ps1` |
+| `tools/` | `dev.sh`, `build.sh`, `flash.sh`, `term.sh`, `usb-wsl.cmd`/`.ps1` |
 | `.devcontainer/` | Entwicklungsumgebung |
 
 Später kommen `drivers/`, `bus/` und `table/` dazu.
@@ -72,6 +73,29 @@ Für Skripte gibt es `--device <Seriennummer>` und `--yes`.
 Nach dem Flashen die Platine einmal stromlos machen. Läuft die Firmware, blinkt die Debug-LED
 **grün** (Debug-Build) bzw. **blau** (Test-Build). Im Release-Build blinkt nichts.
 
+## Test-Shell
+
+Der Test-Build startet eine Kommando-Shell auf dem USB-Port der Platine (USB-CDC).
+
+```bash
+build.sh --test && flash.sh --test
+term.sh               # findet den Port selbst, Ende mit Ctrl+T Q
+```
+
+Unter Windows muss dafür auch das Gerät `0483:5740` (laufende Firmware) mit `usb-wsl.cmd` durchgereicht sein.
+Nach dem Verbinden einmal Enter drücken.
+
+```
+> help
+> version
+> tasks
+> led red on
+```
+
+Jede Antwort endet mit einer Zeile `OK …` oder `ERR …`, davor dürfen Datenzeilen stehen.
+Neue Testbefehle für einen Treiber: `test/test_<treiber>.cpp` nach dem Muster von `test/test_led.cpp`
+anlegen, in `CMakeLists.txt` und in der Tabelle in `test/test_main.cpp` eintragen.
+
 ## CubeMX
 
 STM32CubeMX 6.x (nicht CubeMX2), FW_F4 V1.28.3. CubeMX läuft unter Windows und kann
@@ -82,5 +106,6 @@ net use W: \\wsl.localhost\Ubuntu /persistent:yes
 ```
 
 Dann `W:\home\<user>\<repo>\cubemx\HardwareInterface.ioc` öffnen, ändern und „Generate Code“.
-Eigener Code gehört nie nach `cubemx/`. Die Start-Task heißt `app` mit `app_main` als „As weak“.
+Eigener Code gehört nie nach `cubemx/`. Einzige Ausnahme sind zwei Zeilen im User-Code von
+`USB_DEVICE/App/usbd_cdc_if.c`, die empfangene USB-Daten an `common/usb_cdc` weitergeben. Die Start-Task heißt `app` mit `app_main` als „As weak“.
 Die echte Funktion steht in `app/app.cpp`.
