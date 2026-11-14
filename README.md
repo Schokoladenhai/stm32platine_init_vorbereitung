@@ -79,7 +79,7 @@ Der Test-Build startet eine Kommando-Shell auf dem USB-Port der Platine (USB-CDC
 
 ```bash
 build.sh --test && flash.sh --test
-term.sh               # findet den Port selbst, Ende mit Ctrl+T Q
+term.sh               # findet den Port selbst, Ende mit Ctrl+A, dann Q
 ```
 
 Unter Windows muss dafür auch das Gerät `0483:5740` (laufende Firmware) mit `usb-wsl.cmd` durchgereicht sein.
