@@ -40,6 +40,9 @@
         * EXTI
         * Free pins are configured automatically as Analog (this feature is enabled through
         * the Code Generation settings)
+     PB13   ------> USB_OTG_HS_VBUS
+     PB14   ------> USB_OTG_HS_DM
+     PB15   ------> USB_OTG_HS_DP
 */
 void MX_GPIO_Init(void)
 {
@@ -150,6 +153,20 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(PWR_EXT_ENABLE_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : USB2_VBUS_Pin */
+  GPIO_InitStruct.Pin = USB2_VBUS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(USB2_VBUS_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : USB2_D__Pin USB2_D_B15_Pin */
+  GPIO_InitStruct.Pin = USB2_D__Pin|USB2_D_B15_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF12_OTG_HS_FS;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PD8 PD9 TIM2_GPIO_Pin PD11
                            PD2 PD4 PD7 */
