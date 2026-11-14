@@ -12,8 +12,10 @@
 
 namespace {
 
-// Lebenszeichen: Normal-Build blinkt grün, Test-Build blinkt blau.
-// So sieht man ohne Debugger, dass die Firmware läuft und welche drauf ist.
+// Lebenszeichen: Debug-Build blinkt grün, Test-Build blau, Release gar nicht
+// (FW_HEARTBEAT kommt aus CMakeLists.txt). So sieht man ohne Debugger, dass
+// die Firmware läuft und welche drauf ist.
+#if FW_HEARTBEAT
 #if FW_TEST_BUILD
 GPIO_TypeDef* const heartbeat_port = DEBUG_LED_BLUE_GPIO_Port;
 constexpr uint16_t heartbeat_pin = DEBUG_LED_BLUE_Pin;
@@ -31,6 +33,7 @@ void heartbeat_task(void*) {
         vTaskDelay(pdMS_TO_TICKS(app_config::heartbeat_period_ms));
     }
 }
+#endif  // FW_HEARTBEAT
 
 void app_init() {
 #if FW_TEST_BUILD
@@ -38,8 +41,10 @@ void app_init() {
 #else
     // später: Tabelle, Busse, Treiber und Tasks (siehe Architekturkonzept)
 #endif
+#if FW_HEARTBEAT
     xTaskCreateStatic(heartbeat_task, "heartbeat", app_config::heartbeat_stack_words, nullptr,
                       app_config::heartbeat_priority, heartbeat_stack, &heartbeat_tcb);
+#endif
 }
 
 }  // namespace

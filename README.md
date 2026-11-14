@@ -70,7 +70,7 @@ Für Skripte gibt es `--device <Seriennummer>` und `--yes`.
 - **DFU (USB):** BOOT0-Jumper auf 3V3, Reset, Kabel am Port „USB Host“. Nach dem Flashen Jumper ab.
 
 Nach dem Flashen die Platine einmal stromlos machen. Läuft die Firmware, blinkt die Debug-LED
-**grün** (normaler Build) bzw. **blau** (Test-Build).
+**grün** (Debug-Build) bzw. **blau** (Test-Build). Im Release-Build blinkt nichts.
 
 ## CubeMX
 

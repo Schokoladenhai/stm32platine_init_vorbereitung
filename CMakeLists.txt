@@ -45,6 +45,9 @@ if(NOT FW_GIT_VERSION)
 endif()
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE FW_VERSION="${FW_GIT_VERSION}")
 
+# Lebenszeichen-LED nur in Debug- und Test-Builds, im Release bleibt sie aus
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE FW_HEARTBEAT=$<IF:$<CONFIG:Release>,0,1>)
+
 # Normal- oder Test-Build
 if(FW_TEST_BUILD)
     target_sources(${CMAKE_PROJECT_NAME} PRIVATE test/test_main.cpp)
