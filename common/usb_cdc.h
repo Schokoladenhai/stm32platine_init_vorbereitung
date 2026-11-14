@@ -26,7 +26,7 @@ void usb_cdc_rx_isr(const uint8_t* data, uint32_t len);
  */
 namespace usb_cdc {
 
-// Vor dem Start des USB-Stacks aufrufen.
+// Vor dem Start des USB-Stacks aus einer Task aufrufen (wartet 50 ms, siehe .cpp).
 void init();
 
 // Liest bis zu len Bytes. Gibt die Anzahl zurück (0 bei Timeout).

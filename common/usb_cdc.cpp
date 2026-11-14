@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include "semphr.h"
+#include "stm32f4xx_hal.h"
 #include "stream_buffer.h"
 #include "task.h"
 #include "usb_device.h"
@@ -49,6 +50,17 @@ extern "C" void usb_cdc_rx_isr(const uint8_t* data, uint32_t len) {
 namespace usb_cdc {
 
 void init() {
+    // Nach einem Reset bei gestecktem Kabel merkt der PC sonst nicht zuverlässig,
+    // dass das Gerät neu angemeldet werden muss. D+ (PA12) kurz auf Low ziehen
+    // simuliert ein Abstecken. MX_USB_DEVICE_Init schaltet den Pin danach wieder auf USB.
+    GPIO_InitTypeDef pin = {};
+    pin.Pin = GPIO_PIN_12;
+    pin.Mode = GPIO_MODE_OUTPUT_PP;
+    pin.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
+    HAL_GPIO_Init(GPIOA, &pin);
+    vTaskDelay(pdMS_TO_TICKS(50));
+
     rx_stream = xStreamBufferCreateStatic(rx_buffer_size, 1, rx_stream_storage, &rx_stream_struct);
     tx_mutex = xSemaphoreCreateMutexStatic(&tx_mutex_struct);
 }
