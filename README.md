@@ -75,7 +75,7 @@ Nach dem Flashen die Platine einmal stromlos machen. Läuft die Firmware, blinkt
 
 ## Test-Shell
 
-Der Test-Build startet eine Kommando-Shell auf dem USB-Port der Platine (USB-CDC).
+Der Test-Build startet eine Kommando-Shell über USB-CDC am Stecker „USB Host“, also am selben Stecker wie beim Flashen per DFU (USB FS, PA11/PA12). Der Stecker „USB Debug“ (USB HS) ist ungenutzt.
 
 ```bash
 build.sh --test && flash.sh --test

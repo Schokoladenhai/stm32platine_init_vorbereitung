@@ -9,10 +9,9 @@ extern "C" {
 
 /**
  * Wird aus dem USB-Interrupt in cubemx/USB_DEVICE/App/usbd_cdc_if.c aufgerufen
- * (eine Zeile im User-Code von CDC_Receive_FS bzw. CDC_Receive_HS).
- * port: 0 = USB FS, 1 = USB HS.
+ * (eine Zeile im User-Code von CDC_Receive_FS).
  */
-void usb_cdc_rx_isr(int port, const uint8_t* data, uint32_t len);
+void usb_cdc_rx_isr(const uint8_t* data, uint32_t len);
 
 #ifdef __cplusplus
 }
@@ -21,8 +20,9 @@ void usb_cdc_rx_isr(int port, const uint8_t* data, uint32_t len);
 
 /**
  * Virtuelle serielle Schnittstelle über USB (CDC) für Tasks.
+ * Läuft auf USB FS (PA11/PA12), auf der Platine der Stecker „USB Host“.
+ * Über denselben Stecker wird per DFU geflasht.
  * Empfang: Der Interrupt legt Bytes in einen Stream-Buffer, genau eine Task liest.
- * Senden: Antworten gehen an den Port, von dem zuletzt Daten kamen.
  */
 namespace usb_cdc {
 
