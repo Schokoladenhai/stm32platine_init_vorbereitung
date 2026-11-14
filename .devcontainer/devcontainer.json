@@ -1,0 +1,14 @@
+{
+    "name": "stm32platine",
+    "build": { "dockerfile": "Dockerfile" },
+    "remoteUser": "dev",
+    "workspaceFolder": "/workspace",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    // /dev einbinden, damit auch später eingesteckte Geräte sichtbar sind.
+    // Statt --privileged nur Zugriff auf USB-Geräte (189) und ttyACM (166).
+    "mounts": [ "source=/dev,target=/dev,type=bind" ],
+    "runArgs": [
+        "--device-cgroup-rule=c 189:* rmw",
+        "--device-cgroup-rule=c 166:* rmw"
+    ]
+}
