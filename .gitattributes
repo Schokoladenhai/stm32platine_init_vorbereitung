@@ -1,3 +1,4 @@
 # Einheitlich LF im Repo, egal ob CubeMX unter Windows oder Linux generiert.
 * text=auto eol=lf
 *.ps1 text eol=crlf
+*.cmd text eol=crlf

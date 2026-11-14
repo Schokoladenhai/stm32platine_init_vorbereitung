@@ -13,7 +13,7 @@ Aufbau und Begründungen stehen im Architekturkonzept der Studienarbeit.
 | `app/` | `app_main()` als Einstieg, Konfiguration, später die Tasks |
 | `test/` | Nur im Test-Build: Kommando-Shell und Testdatei pro Treiber |
 | `cmake/` | Toolchain-Datei für `arm-none-eabi-gcc` |
-| `tools/` | `dev.sh`, `build.sh`, `flash.sh`, `usb-wsl.ps1` |
+| `tools/` | `dev.sh`, `build.sh`, `flash.sh`, `usb-wsl.cmd`/`.ps1` |
 | `.devcontainer/` | Entwicklungsumgebung |
 
 Später kommen `drivers/`, `bus/` und `table/` dazu.
@@ -45,9 +45,12 @@ Ohne Skript: `cmake --preset debug && cmake --build --preset debug`.
 Einmalig usbipd installieren: `winget install usbipd`. Danach in PowerShell im Repo-Ordner:
 
 ```powershell
-.\tools\usb-wsl.ps1          # Geräte auswählen
-.\tools\usb-wsl.ps1 -Stop    # Durchreichen beenden
+.\tools\usb-wsl.cmd          # Geräte auswählen (oder Doppelklick im Explorer)
+.\tools\usb-wsl.cmd -Stop    # Durchreichen beenden
 ```
+
+`usb-wsl.cmd` startet `usb-wsl.ps1` mit `-ExecutionPolicy Bypass`, weil Windows Skripte
+standardmäßig blockiert. Die Richtlinie des Systems bleibt dabei unverändert.
 
 Unter Linux ist nichts zu tun.
 
