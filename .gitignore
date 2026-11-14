@@ -1,0 +1,9 @@
+# Build-Ausgaben
+build/
+
+# Dateien, die CubeMX einmalig für ein eigenständiges Projekt anlegt.
+# Wir bauen über das CMake im Repo-Wurzelverzeichnis, deshalb werden sie nicht genutzt.
+cubemx/CMakeLists.txt
+cubemx/CMakePresets.json
+cubemx/cmake/gcc-arm-none-eabi.cmake
+cubemx/cmake/starm-clang.cmake

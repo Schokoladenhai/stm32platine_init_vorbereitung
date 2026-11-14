@@ -24,10 +24,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "logger.h"
-#include "thread_safe_can.h"
-#include "thread_safe_i2c.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -103,8 +99,6 @@ void app_main(void *argument);
 
 /* USER CODE BEGIN PFP */
 
-// CAuDri - Main entry point in main.cpp
-extern void mainTask(); 
 
 /* USER CODE END PFP */
 
@@ -157,11 +151,6 @@ int main(void)
   MX_TIM8_Init();
   /* USER CODE BEGIN 2 */
 
-  // CAuDri - Initialize the trace recorder for debugging with Tracealyzer
-  #ifdef DEBUG_USE_TRACE_RECORDER
-    xTraceInitialize();
-  #endif
-
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -188,14 +177,6 @@ int main(void)
   appHandle = osThreadNew(app_main, NULL, &app_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-
-  // CAuDri - Initialize the logging interface and start the logger thread
-  if (!logger_init()) {
-      LogInline("Main: Failed to initialize logger");
-  } else {
-      LogClear();
-  }
-
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
@@ -1039,37 +1020,7 @@ __weak void app_main(void *argument)
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 5 */
-
-  // CAuDri - If enabled, start recording traces used for debugging with Tracealyzer
-  #ifdef DEBUG_USE_TRACE_RECORDER
-    HAL_GPIO_WritePin(DEBUG_LED_BLUE_GPIO_Port, DEBUG_LED_BLUE_Pin, GPIO_PIN_SET);
-    #ifdef DEBUG_WAIT_FOR_TRACEALYZER
-      xTraceEnable(TRC_START_AWAIT_HOST);
-    #else
-      xTraceEnable(TRC_START_FROM_HOST);
-    #endif
-    // Initialize the logging interface with multiple trace channels
-    extern void logger_trace_init();
-    logger_trace_init();
-    HAL_GPIO_WritePin(DEBUG_LED_BLUE_GPIO_Port, DEBUG_LED_BLUE_Pin, GPIO_PIN_RESET);
-  #endif
-
-  osDelay(10);
-
-  // CAuDri - Initialize the thread-safe HAL wrapper
-  if (!I2C_Init()) {
-      LogError("Main: Failed to initialize thread-safe I2C wrapper");
-  }
-  if (!CAN_Init()) {
-      LogError("Main: Failed to initialize thread-safe CAN wrapper");
-  }
-
-  osDelay(10);
-
-  // CAuDri - Jump to our main entry point in main.cpp
-  mainTask();
-
-  /* Infinite loop */
+  /* Platzhalter: die echte app_main() steht in app/app.cpp */
   for(;;)
   {
     osDelay(1);
