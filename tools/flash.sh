@@ -48,7 +48,7 @@ declare -A KNOWN=(
 )
 
 # Geräte über sysfs suchen (funktioniert ohne udev-Regeln, auch im Container)
-kinds=(); labels=(); serials=()
+kinds=(); labels=(); serials=(); locations=()
 for dev in "${USB_SYSFS:-/sys/bus/usb/devices}"/*; do
     [[ -f "$dev/idVendor" ]] || continue
     id="$(cat "$dev/idVendor"):$(cat "$dev/idProduct")"
@@ -56,10 +56,15 @@ for dev in "${USB_SYSFS:-/sys/bus/usb/devices}"/*; do
     kind="${KNOWN[$id]%%|*}"
     [[ $mode == any || $mode == "$kind" ]] || continue
     serial="$(cat "$dev/serial" 2>/dev/null || true)"
+    # Ältere ST-Link V2 liefern die Seriennummer als Binärdaten. Die taugt nicht zur
+    # Auswahl, dann wird das Gerät über seinen USB-Anschluss (z. B. 2-1.3) angesprochen.
+    [[ "$serial" =~ ^[0-9A-Za-z]+$ ]] || serial=""
     [[ -z "$want_serial" || "$serial" == "$want_serial" ]] || continue
+    location="$(basename "$dev")"
     kinds+=("$kind")
-    labels+=("${KNOWN[$id]#*|}  (Bus $(cat "$dev/busnum"), SN ${serial:-unbekannt})")
+    labels+=("${KNOWN[$id]#*|}  (USB $location, SN ${serial:-nicht lesbar})")
     serials+=("$serial")
+    locations+=("$location")
 done
 
 if [[ ${#kinds[@]} -eq 0 ]]; then
@@ -90,12 +95,15 @@ SUDO=""
 [[ $(id -u) -ne 0 ]] && SUDO="sudo"
 
 if [[ $kind == swd ]]; then
-    serial_cmd=()
-    [[ -n "$serial" ]] && serial_cmd=(-c "adapter serial $serial")
-    $SUDO openocd -f interface/stlink.cfg "${serial_cmd[@]}" -f target/stm32f4x.cfg \
+    if [[ -n "$serial" ]]; then
+        select_cmd=(-c "adapter serial $serial")
+    else
+        select_cmd=(-c "adapter usb location ${locations[$choice]}")
+    fi
+    $SUDO openocd -f interface/stlink.cfg "${select_cmd[@]}" -f target/stm32f4x.cfg \
         -c "program $elf verify reset exit"
 else
-    serial_arg=()
+    serial_arg=(-p "${locations[$choice]}")
     [[ -n "$serial" ]] && serial_arg=(-S "$serial")
     $SUDO dfu-util -d 0483:df11 "${serial_arg[@]}" -a 0 -s 0x08000000:leave -D "$bin"
     echo "Fertig. BOOT0-Jumper entfernen und Platine einmal stromlos machen."
