@@ -28,6 +28,10 @@ void ok();
 void ok(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
 void err(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
 
+// Festkomma-Text für float, weil printf in newlib-nano keine float kann.
+// Schreibt in buf und gibt buf zurück, z. B. fixed(b, sizeof b, -1.25f, 2) -> "-1.25".
+const char* fixed(char* buf, size_t size, float v, int decimals);
+
 // Alle registrierten Tabellen (für "help")
 const CommandTable* tables();
 size_t table_count();

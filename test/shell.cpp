@@ -135,6 +135,19 @@ void err(const char* fmt, ...) {
     va_end(args);
 }
 
+const char* fixed(char* buf, size_t size, float v, int decimals) {
+    int scale = 1;
+    for (int i = 0; i < decimals; ++i) scale *= 10;
+    const bool neg = v < 0;
+    const long scaled = static_cast<long>((neg ? -v : v) * scale + 0.5f);
+    if (decimals == 0) {
+        std::snprintf(buf, size, "%s%ld", neg ? "-" : "", scaled);
+    } else {
+        std::snprintf(buf, size, "%s%ld.%0*ld", neg ? "-" : "", scaled / scale, decimals, scaled % scale);
+    }
+    return buf;
+}
+
 const CommandTable* tables() { return registered_tables; }
 size_t table_count() { return registered_count; }
 

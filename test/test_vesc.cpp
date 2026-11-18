@@ -52,20 +52,6 @@ void drain() {
     }
 }
 
-// Festkomma-Ausgabe, weil printf in newlib-nano keine float kann.
-const char* fixed(char* buf, size_t size, float v, int decimals) {
-    int scale = 1;
-    for (int i = 0; i < decimals; ++i) scale *= 10;
-    const bool neg = v < 0;
-    const long scaled = static_cast<long>((neg ? -v : v) * scale + 0.5f);
-    if (decimals == 0) {
-        std::snprintf(buf, size, "%s%ld", neg ? "-" : "", scaled);
-    } else {
-        std::snprintf(buf, size, "%s%ld.%0*ld", neg ? "-" : "", scaled / scale, decimals, scaled % scale);
-    }
-    return buf;
-}
-
 bool parse_float(const char* text, float& value) {
     char* end = nullptr;
     value = std::strtof(text, &end);
@@ -137,13 +123,13 @@ void status() {
         return;
     }
     shell::print("erpm        %ld", static_cast<long>(s.erpm));
-    shell::print("strom       %s A, duty %s", fixed(a, sizeof a, s.current_a, 1), fixed(b, sizeof b, s.duty, 3));
-    shell::print("akku        %s V, %s A", fixed(a, sizeof a, s.voltage_in_v, 1),
-                 fixed(b, sizeof b, s.current_in_a, 1));
-    shell::print("temperatur  FET %s C, Motor %s C", fixed(a, sizeof a, s.temp_fet_c, 1),
-                 fixed(b, sizeof b, s.temp_motor_c, 1));
-    shell::print("verbrauch   %s Ah, %s Wh, tacho %ld", fixed(a, sizeof a, s.amp_hours, 3),
-                 fixed(b, sizeof b, s.watt_hours, 2), static_cast<long>(s.tacho));
+    shell::print("strom       %s A, duty %s", shell::fixed(a, sizeof a, s.current_a, 1), shell::fixed(b, sizeof b, s.duty, 3));
+    shell::print("akku        %s V, %s A", shell::fixed(a, sizeof a, s.voltage_in_v, 1),
+                 shell::fixed(b, sizeof b, s.current_in_a, 1));
+    shell::print("temperatur  FET %s C, Motor %s C", shell::fixed(a, sizeof a, s.temp_fet_c, 1),
+                 shell::fixed(b, sizeof b, s.temp_motor_c, 1));
+    shell::print("verbrauch   %s Ah, %s Wh, tacho %ld", shell::fixed(a, sizeof a, s.amp_hours, 3),
+                 shell::fixed(b, sizeof b, s.watt_hours, 2), static_cast<long>(s.tacho));
     shell::print("pakete      status1..5 empfangen: %c%c%c%c%c", (s.seen_packets & 1) ? '1' : '-',
                  (s.seen_packets & 2) ? '2' : '-', (s.seen_packets & 4) ? '3' : '-',
                  (s.seen_packets & 8) ? '4' : '-', (s.seen_packets & 16) ? '5' : '-');

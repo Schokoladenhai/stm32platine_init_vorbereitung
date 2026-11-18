@@ -1,0 +1,16 @@
+// Alle Einträge der Datentabelle, eine Zeile pro Eintrag.
+//
+//   TABLE_ENTRY(name, Typ, "Beschreibung")
+//
+// name         -> table::Id::name, auch der Name in der Test-Shell ("table")
+// Typ          -> Struktur aus table_types.hpp
+// Beschreibung -> eine Zeile für die Test-Shell, mit dem vorgesehenen Schreiber
+//
+// Diese Datei wird mehrfach eingebunden (X-Macro), jedes Mal mit einer anderen Definition von
+// TABLE_ENTRY. Daraus entstehen Enum, Speicher, Typzuordnung und Namensliste, ohne dass man
+// einen Eintrag an mehreren Stellen pflegen muss. Deshalb kein #pragma once.
+//
+// Höchstens 32 Einträge (ein Bit pro Eintrag in der Task-Notification).
+
+TABLE_ENTRY(drive_cmd,   DriveCmd,   "Soll: Fahren + Lenken (Schreiber: Kommunikation/RC)")
+TABLE_ENTRY(drive_state, DriveState, "Ist: VESC-Telemetrie + Lenkung (Schreiber: task_drivetrain)")
