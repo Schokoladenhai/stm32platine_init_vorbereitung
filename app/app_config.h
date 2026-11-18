@@ -18,8 +18,8 @@ inline constexpr UBaseType_t shell_priority = tskIDLE_PRIORITY + 2;
 inline constexpr uint32_t shell_stack_words = 512;
 
 // Antrieb
-// VESC-ID ("Controller ID" im VESC-Tool). Der Vorgänger hat am Fahrzeug mit 86 getestet,
-// LARS nutzt 51. Am Fahrzeug mit "vesc scan" in der Test-Shell prüfen.
-inline constexpr uint8_t vesc_id = 86;
+// VESC-ID ("Controller ID" im VESC-Tool). Am Fahrzeug per "vesc scan" ermittelt (2026-11-18).
+// Zum Vergleich: Vorgänger-Code 86, LARS 51.
+inline constexpr uint8_t vesc_id = 20;
 
 }  // namespace app_config
