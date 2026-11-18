@@ -97,7 +97,7 @@ Nach dem Verbinden einmal Enter drücken.
 > can send 123 01 02     # Standard-Frame senden, ID und Bytes hex
 > can stat               # Zähler, Fehlerzustand
 > vesc scan              # welche VESC-IDs senden Status?
-> vesc id 86             # VESC-ID für die folgenden Befehle
+> vesc id 20             # VESC-ID für die folgenden Befehle
 > vesc erpm 2000 3000    # 3 s lang 2000 ERPM (alle 20 ms wiederholt), danach Motor frei
 > vesc servo 1520 2000   # Lenkservo 2 s auf 1520 µs (Werte <= 2 gelten als Position 0..1)
 > vesc status            # Drehzahl, Ströme, Spannung, Temperaturen
