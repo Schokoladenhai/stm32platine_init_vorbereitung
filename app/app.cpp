@@ -2,6 +2,7 @@
 
 #include "FreeRTOS.h"
 #include "app/app_config.h"
+#include "bus/can_bus.hpp"
 #include "common/usb_cdc.h"
 #include "main.h"
 #include "task.h"
@@ -37,6 +38,11 @@ void heartbeat_task(void*) {
 #endif  // FW_HEARTBEAT
 
 void app_init() {
+    // Busse zuerst, Treiber und Tasks bauen darauf auf. Schlägt das fehl, leuchtet die rote LED.
+    if (!can_bus::init()) {
+        HAL_GPIO_WritePin(DEBUG_LED_RED_GPIO_Port, DEBUG_LED_RED_Pin, GPIO_PIN_SET);
+    }
+
 #if FW_TEST_BUILD
     test::start();  // später: Kommando-Shell über USB-CDC
 #else

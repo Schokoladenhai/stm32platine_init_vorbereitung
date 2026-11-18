@@ -11,13 +11,14 @@ Aufbau und Begründungen stehen im Architekturkonzept der Studienarbeit.
 |---|---|
 | `cubemx/` | Von STM32CubeMX generiert. Nur über die `.ioc` in CubeMX ändern. |
 | `app/` | `app_main()` als Einstieg, Konfiguration, später die Tasks |
+| `bus/` | Threadsafe Zugriff auf geteilte Peripherie, z. B. `can_bus` (CAN1: senden aus jeder Task, Empfang per Filter in die Queue der Task) |
 | `common/` | Gemeinsame Bausteine, z. B. `usb_cdc` (serielle Schnittstelle über USB) |
 | `test/` | Nur im Test-Build: Kommando-Shell und Testdatei pro Treiber |
 | `cmake/` | Toolchain-Datei für `arm-none-eabi-gcc` |
 | `tools/` | `dev.sh`, `build.sh`, `flash.sh`, `term.sh`, `usb-wsl.cmd`/`.ps1` |
 | `.devcontainer/` | Entwicklungsumgebung |
 
-Später kommen `drivers/`, `bus/` und `table/` dazu.
+Später kommen `drivers/` und `table/` dazu.
 
 ## Entwicklungsumgebung
 
@@ -90,6 +91,10 @@ Nach dem Verbinden einmal Enter drücken.
 > version
 > tasks
 > led red on
+> can listen 0 0 x       # alle 29-Bit-IDs mithören (z. B. VESC-Status)
+> can rx                 # empfangene Frames ausgeben
+> can send 123 01 02     # Standard-Frame senden, ID und Bytes hex
+> can stat               # Zähler, Fehlerzustand
 ```
 
 Jede Antwort endet mit einer Zeile `OK …` oder `ERR …`, davor dürfen Datenzeilen stehen.
