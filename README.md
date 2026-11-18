@@ -12,7 +12,7 @@ Aufbau und Begründungen stehen im Architekturkonzept der Studienarbeit.
 | `cubemx/` | Von STM32CubeMX generiert. Nur über die `.ioc` in CubeMX ändern. |
 | `app/` | `app_main()` als Einstieg, Konfiguration, später die Tasks |
 | `bus/` | Threadsafe Zugriff auf geteilte Peripherie, z. B. `can_bus` (CAN1: senden aus jeder Task, Empfang per Filter in die Queue der Task) |
-| `drivers/` | Treiber als Werkzeuge ohne eigene Task, z. B. `vesc` (Motor und Lenkung über den Servo-Ausgang des VESC) |
+| `drivers/` | Treiber als Werkzeuge ohne eigene Task, z. B. `vesc` (Motor, optional Lenkung über den Servo-Ausgang des VESC) und `servo` (Lenkservo per PWM von der Platine) |
 | `common/` | Gemeinsame Bausteine, z. B. `usb_cdc` (serielle Schnittstelle über USB) |
 | `test/` | Nur im Test-Build: Kommando-Shell und Testdatei pro Treiber |
 | `cmake/` | Toolchain-Datei für `arm-none-eabi-gcc` |
@@ -101,6 +101,8 @@ Nach dem Verbinden einmal Enter drücken.
 > vesc erpm 2000 3000    # 3 s lang 2000 ERPM (alle 20 ms wiederholt), danach Motor frei
 > vesc servo 1520 2000   # Lenkservo 2 s auf 1520 µs (Werte <= 2 gelten als Position 0..1)
 > vesc status            # Drehzahl, Ströme, Spannung, Temperaturen
+> servo 1600             # Lenkservo an SERVO1 (PA6) direkt per PWM, begrenzt auf 1095..1795 µs
+> servo sweep            # einmal Anschlag links/rechts, dann Mitte
 ```
 
 Jede Antwort endet mit einer Zeile `OK …` oder `ERR …`, davor dürfen Datenzeilen stehen.

@@ -22,4 +22,11 @@ inline constexpr uint32_t shell_stack_words = 512;
 // Zum Vergleich: Vorgänger-Code 86, LARS 51.
 inline constexpr uint8_t vesc_id = 20;
 
+// Lenkservo am Anschluss SERVO1 (TIM3 CH1, PA6). Grenzen und Mitte aus der Messung des
+// Vorgängers (SA 4.4): Mitte 1520 µs, Bereich 1095..1795 µs. Am Fahrzeug prüfen.
+inline constexpr uint16_t steering_min_us = 1095;
+inline constexpr uint16_t steering_max_us = 1795;
+inline constexpr uint16_t steering_center_us = 1520;
+inline constexpr uint16_t steering_frequency_hz = 50;
+
 }  // namespace app_config

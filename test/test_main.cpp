@@ -7,6 +7,7 @@
 #include "test/shell.h"
 #include "test/test_can.h"
 #include "test/test_led.h"
+#include "test/test_servo.h"
 #include "test/test_vesc.h"
 
 namespace {
@@ -71,6 +72,7 @@ const shell::CommandTable all_tables[] = {
     test_led::table(),
     test_can::table(),
     test_vesc::table(),
+    test_servo::table(),
 };
 
 }  // namespace
