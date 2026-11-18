@@ -13,13 +13,12 @@ Aufbau und Begründungen stehen im Architekturkonzept der Studienarbeit.
 | `app/` | `app_main()` als Einstieg, Konfiguration, später die Tasks |
 | `bus/` | Threadsafe Zugriff auf geteilte Peripherie, z. B. `can_bus` (CAN1: senden aus jeder Task, Empfang per Filter in die Queue der Task) |
 | `drivers/` | Treiber als Werkzeuge ohne eigene Task, z. B. `vesc` (Motor und Lenkung über den Servo-Ausgang des VESC) |
+| `table/` | Datentabelle: einzige Verbindung zwischen den Tasks. Einträge in `table_entries.def`, Typen in `table_types.hpp` (siehe unten) |
 | `common/` | Gemeinsame Bausteine, z. B. `usb_cdc` (serielle Schnittstelle über USB) |
 | `test/` | Nur im Test-Build: Kommando-Shell und Testdatei pro Treiber |
 | `cmake/` | Toolchain-Datei für `arm-none-eabi-gcc` |
 | `tools/` | `dev.sh`, `build.sh`, `flash.sh`, `term.sh`, `usb-wsl.cmd`/`.ps1` |
 | `.devcontainer/` | Entwicklungsumgebung |
-
-Später kommt `table/` dazu.
 
 ## Entwicklungsumgebung
 
@@ -101,11 +100,32 @@ Nach dem Verbinden einmal Enter drücken.
 > vesc erpm 2000 3000    # 3 s lang 2000 ERPM (alle 20 ms wiederholt), danach Motor frei
 > vesc servo 1520 2000   # Lenkservo 2 s auf 1520 µs (Werte <= 2 gelten als Position 0..1)
 > vesc status            # Drehzahl, Ströme, Spannung, Temperaturen
+> table                  # alle Tabelleneinträge mit Alter, Schreiber und Inhalt
+> table set drive_cmd 2000 -0.2   # Fahrbefehl eintragen (nur zum Testen)
+> table bench            # wie lange get/set dauern
 ```
 
 Jede Antwort endet mit einer Zeile `OK …` oder `ERR …`, davor dürfen Datenzeilen stehen.
 Neue Testbefehle für einen Treiber: `test/test_<treiber>.cpp` nach dem Muster von `test/test_led.cpp`
 anlegen, in `CMakeLists.txt` und in der Tabelle in `test/test_main.cpp` eintragen.
+
+## Datentabelle
+
+Tasks reden nicht direkt miteinander, sondern über die Tabelle in `table/`:
+
+```cpp
+// Schreiber (genau eine Task pro Eintrag)
+table::set<table::Id::drive_cmd>({2000.0f, -0.2f});  // erpm, steering
+
+// Leser (beliebig viele Tasks), bekommen eine Kopie mit Zeitstempel und Gültig-Flag
+const auto e = table::get<table::Id::drive_cmd>();
+if (e.fresh(100)) { /* gültig und höchstens 100 ms alt */ }
+```
+
+- **Neuer Eintrag:** Struktur in `table_types.hpp`, eine Zeile in `table_entries.def`, Ausgabe in `test/test_table.cpp`.
+- **Ein Schreiber pro Eintrag:** Die erste schreibende Task wird Besitzer, eine zweite hält die Firmware an (`configASSERT`).
+- **Schutz:** Kopieren in einem kurzen kritischen Abschnitt, Einträge höchstens 64 Byte. Nicht aus Interrupts aufrufen.
+- **Aufwecken:** `table::notify_on_set(id)` meldet die aufrufende Task an, jedes `set` setzt dann `table::notify_bit(id)` in ihrer Task-Notification.
 
 ## CubeMX
 
