@@ -5,6 +5,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "test/shell.h"
+#include "test/test_can.h"
 #include "test/test_led.h"
 
 namespace {
@@ -67,6 +68,7 @@ const shell::Command general_commands[] = {
 const shell::CommandTable all_tables[] = {
     SHELL_TABLE(general_commands),
     test_led::table(),
+    test_can::table(),
 };
 
 }  // namespace

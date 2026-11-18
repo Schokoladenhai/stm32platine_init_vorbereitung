@@ -26,6 +26,7 @@ add_subdirectory(cubemx/cmake/stm32cubemx)
 # Eigener Code
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     app/app.cpp
+    bus/can_bus.cpp
     common/usb_cdc.cpp
     cubemx/newlib_lock_glue.c   # von CubeMX erzeugt, aber nicht in dessen CMake-Liste
 )
@@ -56,7 +57,8 @@ if(FW_TEST_BUILD)
     target_sources(${CMAKE_PROJECT_NAME} PRIVATE
         test/shell.cpp
         test/test_main.cpp
-        test/test_led.cpp)
+        test/test_led.cpp
+        test/test_can.cpp)
     target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE FW_TEST_BUILD=1)
     set(FW_OUTPUT_NAME ${CMAKE_PROJECT_NAME}_test)
 else()
