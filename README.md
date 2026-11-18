@@ -12,13 +12,14 @@ Aufbau und Begründungen stehen im Architekturkonzept der Studienarbeit.
 | `cubemx/` | Von STM32CubeMX generiert. Nur über die `.ioc` in CubeMX ändern. |
 | `app/` | `app_main()` als Einstieg, Konfiguration, später die Tasks |
 | `bus/` | Threadsafe Zugriff auf geteilte Peripherie, z. B. `can_bus` (CAN1: senden aus jeder Task, Empfang per Filter in die Queue der Task) |
+| `drivers/` | Treiber als Werkzeuge ohne eigene Task, z. B. `vesc` (Motor und Lenkung über den Servo-Ausgang des VESC) |
 | `common/` | Gemeinsame Bausteine, z. B. `usb_cdc` (serielle Schnittstelle über USB) |
 | `test/` | Nur im Test-Build: Kommando-Shell und Testdatei pro Treiber |
 | `cmake/` | Toolchain-Datei für `arm-none-eabi-gcc` |
 | `tools/` | `dev.sh`, `build.sh`, `flash.sh`, `term.sh`, `usb-wsl.cmd`/`.ps1` |
 | `.devcontainer/` | Entwicklungsumgebung |
 
-Später kommen `drivers/` und `table/` dazu.
+Später kommt `table/` dazu.
 
 ## Entwicklungsumgebung
 
@@ -95,6 +96,11 @@ Nach dem Verbinden einmal Enter drücken.
 > can rx                 # empfangene Frames ausgeben
 > can send 123 01 02     # Standard-Frame senden, ID und Bytes hex
 > can stat               # Zähler, Fehlerzustand
+> vesc scan              # welche VESC-IDs senden Status?
+> vesc id 86             # VESC-ID für die folgenden Befehle
+> vesc erpm 2000 3000    # 3 s lang 2000 ERPM (alle 20 ms wiederholt), danach Motor frei
+> vesc servo 1520 2000   # Lenkservo 2 s auf 1520 µs (Werte <= 2 gelten als Position 0..1)
+> vesc status            # Drehzahl, Ströme, Spannung, Temperaturen
 ```
 
 Jede Antwort endet mit einer Zeile `OK …` oder `ERR …`, davor dürfen Datenzeilen stehen.
